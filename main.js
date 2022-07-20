@@ -1,5 +1,5 @@
 var game = function(){
-    let time = 30;
+    let time = 100;
     let movement = 20;
     let movementCh = 20;
     let width = document.documentElement.clientWidth - movement;
@@ -14,7 +14,7 @@ var game = function(){
     }
     
     function init () {
-        ball.style.left = 0;
+        ball.style.left = 500;
         ball.state = 1;
         ball.direction = 1;
         player1 = new Object();
@@ -32,6 +32,81 @@ var game = function(){
 
     function play () {
         moveCh();
+        moveBall();
+        checkIfPoint();
+    }
+
+    function checkIfPoint () {
+        if(ball.offsetLeft >= width) {
+            stop();
+            console.log("point to player 1")
+        }
+        if(ball.offsetLeft <= 0) {
+            stop();
+            console.log("point to player 2")
+        }
+    }
+
+    function moveBall () {
+        checkStateBall ();
+        switch (ball.state) {
+            case 1 : 
+                ball.style.left = (ball.offsetLeft + movement) + "px";
+                ball.style.top = (ball.offsetTop + movement) + "px";
+                break;
+            case 2:
+                ball.style.left = (ball.offsetLeft + movement) + "px";
+                ball.style.top = (ball.offsetTop - movement) + "px";
+                break;
+            case 3:
+                ball.style.left = (ball.offsetLeft - movement) + "px";
+                ball.style.top = (ball.offsetTop + movement) + "px";
+                break;
+            case 4:
+                ball.style.left = (ball.offsetLeft - movement) + "px";
+                ball.style.top = (ball.offsetTop - movement) + "px";
+                break;
+        }
+    }
+
+
+    function checkStateBall () {
+
+        if (collidePlayer2()){
+            ball.direction = 2;
+            if(ball.state === 1) ball.state = 3;
+            if(ball.state === 2) ball.state = 4;
+        } else if (collidePlayer1()) {
+            ball.direction = 1;
+            if(ball.state === 3) ball.state = 1;
+            if(ball.state === 4) ball.state = 2;
+        }
+        if(ball.direction === 1) {
+            if(ball.offsetTop >= height) ball.state = 2;
+            else if(ball.offsetTop <= 0) ball.state = 1;
+        } else {
+            if(ball.offsetTop >= height) ball.state = 4;
+            else if(ball.offsetTop <= 0) ball.state = 3;
+        }
+    }
+
+    function collidePlayer1() {
+            if (ball.offsetLeft <= (ch1.clientWidth) &&
+                ball.offsetTop >= ch1.offsetTop &&
+                ball.offsetTop <= (ch1.offsetTop + ch1.clientHeight)){
+                return true;
+            }
+
+        return false;
+    }
+
+    function collidePlayer2() {
+        if (ball.offsetLeft >= (width-ch2.clientWidth) &&
+                ball.offsetTop >= ch2.offsetTop &&
+                ball.offsetTop <= (ch2.offsetTop + ch2.clientHeight)){
+                return true;
+                }
+        return false;
     }
 
     function moveCh () {
